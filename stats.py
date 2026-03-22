@@ -23,18 +23,14 @@ class GenerationRecord:
     generation: int
     mean_fitness: float
     mean_phenotype: np.ndarray
-    phenotype_variance: float     # uśredniona wariancja po wymiarach (miara różnorodności)
-    distance_from_optimum: float  # ||mean_phenotype - alpha||
+    phenotype_variance: float
+    distance_from_optimum: float
     population_size: int
-    # --- Statystyki reprodukcji ---
-    n_parents: int        = 0    # ilu osobników miało ≥1 potomka
-    median_offspring: float = 0.0  # mediana potomków wśród reprodukujących się
-    max_offspring: int    = 0    # maksymalna płodność ("zwycięzca ewolucyjny")
-    # --- Pole rozszerzenia – studenci mogą tu dodać własne metryki ---
-    # Przykład użycia w własnej symulacji:
-    #   stats.records[-1].extra['moja_metryka'] = wartość
-    extra: dict           = field(default_factory=dict)
-
+    male_mean_tail: float = 0.0
+    n_parents: int = 0
+    median_offspring: float = 0.0
+    max_offspring: int = 0
+    extra: dict = field(default_factory=dict)
 
 class SimulationStats:
     """
@@ -84,6 +80,10 @@ class SimulationStats:
         self.alpha_history.append(alpha.copy())
 
         phenotypes = np.array([ind.get_phenotype() for ind in individuals])
+        males = [ind for ind in individuals if ind.get_sex() == "M"]
+        male_tails = np.array([ind.get_tail() for ind in males], dtype=float) if males else np.array([])
+        male_mean_tail = float(male_tails.mean()) if len(male_tails) > 0 else 0.0
+        
         fitnesses = compute_fitnesses(individuals, alpha, sigma)
 
         mean_phenotype = phenotypes.mean(axis=0)
@@ -102,6 +102,7 @@ class SimulationStats:
             phenotype_variance=float(phenotype_variance),
             distance_from_optimum=distance,
             population_size=len(individuals),
+            male_mean_tail=male_mean_tail,
             n_parents=repro.get('n_parents', 0),
             median_offspring=repro.get('median_offspring', 0.0),
             max_offspring=repro.get('max_offspring', 0),
@@ -144,7 +145,9 @@ class SimulationStats:
     @property
     def max_offspring_series(self) -> np.ndarray:
         return np.array([r.max_offspring for r in self.records])
-
+    @property
+    def male_mean_tails(self) -> np.ndarray:
+        return np.array([r.male_mean_tail for r in self.records])
     # --- Użytkowe metody ---
 
     def survived(self) -> bool:
@@ -170,3 +173,7 @@ class SimulationStats:
             f"Odległość od optimum: {last.distance_from_optimum:.4f} | "
             f"Wariancja fenotypowa: {last.phenotype_variance:.4f}"
         )
+      
+        
+
+
