@@ -1,5 +1,4 @@
 # selection.py
-
 import numpy as np
 from strategies import SelectionStrategy
 
@@ -8,24 +7,30 @@ from strategies import SelectionStrategy
 # Funkcje pomocnicze (używane też w stats.py)
 # ---------------------------------------------------------------------------
 
-def fitness_function(phenotype: np.ndarray, alpha: np.ndarray, sigma: float) -> float:
+def fitness_function(phenotype: np.ndarray, alpha: np.ndarray, sigma: float, tail: float = 0.0) -> float:
     """
-    Gaussowska funkcja fitness:
-        phi_alpha(p) = exp( -||p - alpha||^2 / (2 * sigma^2) )
+    Gaussowska funkcja fitness z kosztem ogona:
+        phi_base(p) = exp( -||p - alpha||^2 / (2 * sigma^2) )
+        phi_total   = phi_base * exp(-0.7 * tail)  tu można zmienić ten koszt posiadania ogona
 
     :param phenotype: fenotyp osobnika
     :param alpha: optymalny fenotyp środowiska
-    :param sigma: parametr siły selekcji (większe sigma = słabsza selekcja)
-    :return: wartość fitness w przedziale (0, 1]
+    :param sigma: parametr siły selekcji
+    :param tail: długość ogona w [0,1]
+    :return: wartość fitness
     """
     diff = phenotype - alpha
-    return float(np.exp(-np.dot(diff, diff) / (2 * sigma ** 2)))
+    base_fitness = float(np.exp(-np.dot(diff, diff) / (2 * sigma ** 2)))
+    tail_cost = np.exp(-0.7 * tail)
+    return float(base_fitness * tail_cost)
 
 
 def compute_fitnesses(individuals: list, alpha: np.ndarray, sigma: float) -> np.ndarray:
     """Oblicza fitness dla całej listy osobników. Zwraca tablicę numpy (N,)."""
-    return np.array([fitness_function(ind.get_phenotype(), alpha, sigma)
-                     for ind in individuals])
+    return np.array([
+        fitness_function(ind.get_phenotype(), alpha, sigma, ind.get_tail())
+        for ind in individuals
+    ])
 
 
 # ---------------------------------------------------------------------------
@@ -45,7 +50,7 @@ class ThresholdSelection(SelectionStrategy):
 
     def select(self, individuals: list, alpha: np.ndarray) -> list:
         return [ind for ind in individuals
-                if fitness_function(ind.get_phenotype(), alpha, self.sigma) >= self.threshold]
+                if fitness_function(ind.get_phenotype(), alpha, self.sigma, ind.get_tail()) >= self.threshold]
 
 
 class ProportionalSelection(SelectionStrategy):
@@ -85,7 +90,7 @@ class TwoStageSelection(SelectionStrategy):
     def select(self, individuals: list, alpha: np.ndarray) -> list:
         # Etap 1: selekcja progowa
         survivors = [ind for ind in individuals
-                     if fitness_function(ind.get_phenotype(), alpha, self.sigma) >= self.threshold]
+                     if fitness_function(ind.get_phenotype(), alpha, self.sigma, ind.get_tail()) >= self.threshold]
         if not survivors:
             return []
 
