@@ -286,20 +286,21 @@ The correlation is stronger under fast environmental change, suggesting that sex
 
 We compared the mean correlation over the final generations across replicates:
 
-- **tail effect:** mean = 0.0623 ± 0.0424  
-- **no tail effect:** mean = 0.0036 ± 0.0335  
+- **tail effect:** mean = 0.2145 ± 0.1003  
+- **no tail effect:** mean = -0.0006 ± 0.0485  
 
 A two-sample t-test shows a highly significant difference:
 
-- **t = 6.78**
+- **t = 12.05**  
 - **p < 0.001**
 
 **Interpretation**
 
+The correlation in the tail condition is statistically highly significant and clearly positive, while in the no-tail condition it remains effectively zero. This indicates that tail length is reliably associated with individual quality when tail-dependent mate choice is present.
 
-The correlation in the tail condition is statistically highly significant, but its magnitude remains moderate. This means that tail length is reliably associated with individual quality, although the relationship is not particularly strong.
+At the same time, the magnitude of the correlation remains moderate. This means that tail length provides meaningful information about fitness, but does not perfectly predict it.
 
-Overall, tail-dependent mate choice produces a **real but relatively weak honest signal**: it is clearly present, but does not perfectly predict fitness.
+Overall, tail-dependent mate choice produces a **clear but imperfect honest signal**: it is consistently present and biologically informative, but still subject to variability and noise.
 
 ### Parameter sensitivity analysis (additional experiment)
 
