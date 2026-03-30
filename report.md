@@ -114,6 +114,7 @@ Mutation:
 - mutation strength: $\xi = 0.15$
 
 Selection:
+
 - strength: $\sigma = 0.15$
 - threshold: $0.05$
 
