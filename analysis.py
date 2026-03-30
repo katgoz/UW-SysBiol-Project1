@@ -264,7 +264,6 @@ plt.show()
 # =========================================================
 # 8. NUMERIC SUMMARY + STAT TEST
 # =========================================================
-
 def collect_all_corr(runs, attr, last_k=50):
     vals = []
     for r in runs:
@@ -279,10 +278,10 @@ no_tail_vals = []
 
 for drift in drifts:
     tail_vals.extend(
-        collect_all_corr(results['tail_effect'][drift], 'tail_base_corr_series')
+        collect_all_corr(results['tail_effect'][drift], 'corr_survivors_series')
     )
     no_tail_vals.extend(
-        collect_all_corr(results['no_tail_effect'][drift], 'tail_base_corr_series')
+        collect_all_corr(results['no_tail_effect'][drift], 'corr_survivors_series')
     )
 
 tail_vals = np.array(tail_vals)
