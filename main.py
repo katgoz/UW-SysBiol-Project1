@@ -76,6 +76,7 @@ def run_simulation(
                 print(f"Populacja wymarła w pokoleniu {generation}.")
             stats.mark_extinct(generation)
             break
+        stats.record_survivors(survivors, alpha, config.sigma)
 
         # Krok 3: Reprodukcja
         new_individuals = reproduction_strategy.reproduce(survivors, config.N)
@@ -151,12 +152,14 @@ def main():
         threshold=config.threshold,
         N=config.N,
     )
-    reproduction = SexualReproduction()
+    reproduction = SexualReproduction(use_tail=True)
     mutation = IsotropicMutation(
         mu=config.mu,
         mu_c=config.mu_c,
         xi=config.xi,
     )
+
+
 
     # --- Uruchomienie symulacji ---
     print("Rozpoczynam symulację...\n")
@@ -196,5 +199,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
