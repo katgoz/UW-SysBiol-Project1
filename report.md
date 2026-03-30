@@ -108,6 +108,7 @@ Key parameters:
 - initial variation: $\text{init\_scale} = 0.1$
 
 Mutation:
+
 - individual mutation rate: $\mu = 0.2$
 - per-trait mutation probability: $\mu_c = 0.7$
 - mutation strength: $\xi = 0.15$
