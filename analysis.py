@@ -94,63 +94,103 @@ plt.savefig("figures/distance.png", dpi=300)
 plt.show()
 
 # =========================================================
-# 3. VARIANCE
+# 3. BASE FITNESS DISTRIBUTION (VIOLIN) 
 # =========================================================
-plt.figure(figsize=(10,6))
 
-for condition in conditions:
-    for drift in drifts:
+generations_to_check = [50, 150]
+
+for gen in generations_to_check:
+    plt.figure(figsize=(10,6))
+
+    data_to_plot = []
+    labels = []
+
+    for condition in conditions:
+        for drift in drifts:
+            runs = results[condition][drift]
+
+            all_base_fit = []
+
+            for r in runs:
+                if hasattr(r, "individual_base_fitness_series"):
+                    if len(r.individual_base_fitness_series) > gen:
+                        gen_data = r.individual_base_fitness_series[gen]
+                        if len(gen_data) > 0:
+                            all_base_fit.extend(gen_data)
+
+            if len(all_base_fit) > 0:
+                data_to_plot.append(all_base_fit)
+                labels.append(f"{condition.replace('_',' ')}\n{drift}")
+
+    if len(data_to_plot) > 0:
+        plt.violinplot(data_to_plot, showmeans=True)
+        plt.xticks(range(1, len(labels)+1), labels)
+
+        plt.ylabel("Base fitness (no tail cost)")
+        plt.title(f"Base fitness distribution at generation {gen}")
+
+        plt.savefig(f"figures/violin_base_fitness_gen_{gen}.png", dpi=300)
+        plt.show()
+
+# =========================================================
+# 4. VARIANCE
+# =========================================================
+
+fig, axes = plt.subplots(1, 2, figsize=(12,5), sharey=True)
+
+for i, drift in enumerate(drifts):
+    ax = axes[i]
+
+    for condition in conditions:
         runs = results[condition][drift]
 
         data = extract_series(runs, 'phenotype_variances')
         mean, std = mean_std(data)
 
-        plt.plot(mean, label=f"{condition}-{drift}")
-        plt.fill_between(range(len(mean)), mean-std, mean+std, alpha=0.2)
+        ax.plot(mean, label=condition.replace('_',' '))
+        ax.fill_between(range(len(mean)), mean-std, mean+std, alpha=0.2)
 
-plt.xlabel("Generation")
-plt.ylabel("Phenotypic variance")
-plt.title("Phenotypic diversity under tail selection regimes")
-plt.legend()
+    ax.set_title(f"{drift} drift")
+    ax.set_xlabel("Generation")
+    ax.set_ylabel("Phenotypic variance")
+    ax.legend()
+
+plt.suptitle("Phenotypic diversity under tail selection regimes")
+
 plt.savefig("figures/variance.png", dpi=300)
 plt.show()
 
 # =========================================================
-# 4. MALE REPRODUCTIVE SUCCESS (CDF)
+# 5. MALE REPRODUCTIVE SUCCESS
 # =========================================================
-plt.figure(figsize=(10,6))
+plt.figure(figsize=(8,5))
 
 for condition in conditions:
+    all_counts = []
+
     for drift in drifts:
         runs = results[condition][drift]
-
-        all_counts = []
-
         for r in runs:
             for gen_counts in r.male_offspring_series:
-                if len(gen_counts) > 0:
-                    all_counts.extend(gen_counts)
+                all_counts.extend(gen_counts)
 
-        if len(all_counts) == 0:
-            continue
+    plt.hist(all_counts,
+             bins=np.arange(0, 50, 1),
+             alpha=0.5,
+             label=condition.replace('_',' '))
 
-        all_counts = np.array(all_counts)
-        sorted_counts = np.sort(all_counts)
-        cdf = np.arange(1, len(sorted_counts)+1) / len(sorted_counts)
+plt.yscale('log')
+plt.xlim(0, 60)
 
-        plt.plot(sorted_counts, cdf,
-                 label=f"{condition}-{drift}")
-
-plt.xlabel("Number of offspring per male")
-plt.ylabel("Cumulative fraction of males")
-plt.title("CDF of male reproductive success (all generations)")
+plt.xlabel("Offspring per male")
+plt.ylabel("Frequency (log scale)")
 plt.legend()
-plt.grid(alpha=0.3)
-plt.savefig("figures/male_reproductive_cdf.png", dpi=300)
+plt.title("Distribution of male reproductive success")
+plt.savefig("figures/offspring_per_male.png", dpi=300)
 plt.show()
 
 # =========================================================
-# 5. EXTINCTION
+# 6. EXTINCTION
 # =========================================================
 extinction_results = {}
 
@@ -194,49 +234,7 @@ plt.savefig("figures/extinction.png", dpi=300)
 plt.show()
 
 # =========================================================
-# 6. FINAL FITNESS
-# =========================================================
-plt.figure(figsize=(8,5))
-
-data_to_plot = []
-labels = []
-
-for condition in conditions:
-    for drift in drifts:
-        runs = results[condition][drift]
-        finals = final_values(runs, 'mean_fitnesses')
-        data_to_plot.append(finals)
-        labels.append(f"{condition.replace('_',' ')}\n{drift}")
-
-plt.boxplot(data_to_plot, tick_labels=labels)
-plt.ylabel("Final mean fitness")
-plt.title("Final fitness under tail selection regimes")
-plt.savefig("figures/final_fitness.png", dpi=300)
-plt.show()
-
-# =========================================================
-# 7. FINAL DISTANCE
-# =========================================================
-plt.figure(figsize=(8,5))
-
-data_to_plot = []
-labels = []
-
-for condition in conditions:
-    for drift in drifts:
-        runs = results[condition][drift]
-        finals = final_values(runs, 'distances_from_optimum')
-        data_to_plot.append(finals)
-        labels.append(f"{condition.replace('_',' ')}\n{drift}")
-
-plt.boxplot(data_to_plot, tick_labels=labels)
-plt.ylabel("Final lag")
-plt.title("Final lag from optimum")
-plt.savefig("figures/final_distance.png", dpi=300)
-plt.show()
-
-# =========================================================
-# 8. CORRELATION (POPRAWIONE 🔥)
+# 7. CORRELATION
 # =========================================================
 fig, axes = plt.subplots(1, 2, figsize=(12,5))
 
@@ -262,103 +260,9 @@ plt.suptitle("Honesty of tail signal (AFTER SELECTION)")
 plt.savefig("figures/correlation_timeseries.png", dpi=300)
 plt.show()
 
-# =========================================================
-# 9. FINAL CORRELATION (POPRAWIONE 🔥)
-# =========================================================
-plt.figure(figsize=(8,5))
-
-data_to_plot = []
-labels = []
-
-for condition in conditions:
-    for drift in drifts:
-        runs = results[condition][drift]
-        finals = final_values(runs, 'corr_survivors_series')  # ✅ ZMIANA
-        data_to_plot.append(finals)
-        labels.append(f"{condition.replace('_',' ')}\n{drift}")
-
-plt.boxplot(data_to_plot, tick_labels=labels)
-plt.ylabel("Final correlation (survivors)")
-plt.title("Final honesty of tail signal")
-plt.savefig("figures/final_correlation.png", dpi=300)
-plt.show()
 
 # =========================================================
-# 10. TAIL EVOLUTION
-# =========================================================
-fig, axes = plt.subplots(1, 2, figsize=(12,5))
-
-for i, condition in enumerate(conditions):
-    ax = axes[i]
-
-    for drift in drifts:
-        runs = results[condition][drift]
-
-        data = extract_series(runs, 'male_mean_tails')
-        mean, std = mean_std(data)
-
-        ax.plot(mean, label=drift)
-        ax.fill_between(range(len(mean)), mean-std, mean+std, alpha=0.2)
-
-    ax.set_title(condition.replace('_', ' '))
-    ax.set_xlabel("Generation")
-    ax.set_ylabel("Mean male tail")
-    ax.legend()
-
-plt.suptitle("Evolution of tail under selection regimes")
-plt.savefig("figures/tail_evolution.png", dpi=300)
-plt.show()
-
-# =========================================================
-# 11. MEAN CORRELATION (TAIL vs NO-TAIL)
-# =========================================================
-
-def mean_corr_per_run(runs, attr, last_k=50):
-    vals = []
-    for r in runs:
-        series = getattr(r, attr)
-        if len(series) == 0:
-            continue
-        vals.append(np.nanmean(series[-last_k:]))
-    return np.array(vals)
-
-print("\n=== MEAN CORRELATION (last generations) ===")
-
-summary = {}
-
-for condition in conditions:
-    all_vals = []
-
-    for drift in drifts:
-        runs = results[condition][drift]
-        vals = mean_corr_per_run(runs, 'tail_base_corr_series')
-
-        print(f"{condition} - {drift}: mean = {np.mean(vals):.3f} ± {np.std(vals):.3f}")
-
-        all_vals.extend(vals)
-
-    all_vals = np.array(all_vals)
-    summary[condition] = all_vals
-
-    print(f"{condition} (ALL): mean = {np.mean(all_vals):.3f} ± {np.std(all_vals):.3f}\n")
-
-# --- wykres ---
-plt.figure(figsize=(6,5))
-
-data = [summary[c] for c in conditions]
-labels = [c.replace('_',' ') for c in conditions]
-
-plt.boxplot(data, tick_labels=labels)
-plt.axhline(0, linestyle='--', alpha=0.5)
-
-plt.ylabel("Correlation (tail vs quality)")
-plt.title("Mean honesty of tail signal")
-
-plt.savefig("figures/mean_correlation_summary.png", dpi=300)
-plt.show()
-
-# =========================================================
-# 12. NUMERIC SUMMARY + STAT TEST
+# 8. NUMERIC SUMMARY + STAT TEST
 # =========================================================
 
 def collect_all_corr(runs, attr, last_k=50):
@@ -395,50 +299,3 @@ t_stat, p_val = ttest_ind(tail_vals, no_tail_vals, equal_var=False)
 print("\n=== STATISTICAL TEST ===")
 print(f"t = {t_stat:.4f}")
 print(f"p = {p_val:.6f}")
-
-print("\n=== NUMERIC COMPARISON ===")
-
-print(f"tail_effect:     mean = {tail_vals.mean():.4f} ± {tail_vals.std():.4f}")
-print(f"tail_effect:     VAR  = {np.var(tail_vals):.6f}")
-
-print(f"no_tail_effect:  mean = {no_tail_vals.mean():.4f} ± {no_tail_vals.std():.4f}")
-print(f"no_tail_effect:  VAR  = {np.var(no_tail_vals):.6f}")
-
-# =========================================================
-# 13. BASE FITNESS DISTRIBUTION (VIOLIN) 
-# =========================================================
-
-generations_to_check = [50, 150]
-
-for gen in generations_to_check:
-    plt.figure(figsize=(10,6))
-
-    data_to_plot = []
-    labels = []
-
-    for condition in conditions:
-        for drift in drifts:
-            runs = results[condition][drift]
-
-            all_base_fit = []
-
-            for r in runs:
-                if hasattr(r, "individual_base_fitness_series"):
-                    if len(r.individual_base_fitness_series) > gen:
-                        gen_data = r.individual_base_fitness_series[gen]
-                        if len(gen_data) > 0:
-                            all_base_fit.extend(gen_data)
-
-            if len(all_base_fit) > 0:
-                data_to_plot.append(all_base_fit)
-                labels.append(f"{condition.replace('_',' ')}\n{drift}")
-
-    if len(data_to_plot) > 0:
-        plt.violinplot(data_to_plot, showmeans=True)
-        plt.xticks(range(1, len(labels)+1), labels)
-
-        plt.ylabel("Base fitness (no tail cost)")
-        plt.title(f"Base fitness distribution at generation {gen}")
-
-        plt.savefig(f"figures/violin_base_fitness_gen_{gen}.png", dpi=300)
-        plt.show()
