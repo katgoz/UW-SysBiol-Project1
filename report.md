@@ -214,7 +214,7 @@ This pattern indicates that sexual selection slightly shifts the distribution of
 
 These distributional differences help explain why populations with mate choice achieve higher mean fitness (Figure 1), despite the cost associated with the tail trait.
 
-#### Phenotypic variance
+### Phenotypic variance
 ![Phenotypic variance](figures/variance.png)
 Figure 4 shows the mean phenotypic variance (± standard deviation) over time, for slow and fast environmental drift.
 
@@ -230,7 +230,7 @@ This indicates that sexual selection reduces phenotypic diversity, likely by inc
 
 The lower variance in the tail-dependent condition does not lead to lower fitness in later generations. In fact, fitness remains higher than in the no-tail condition. This suggests that reduced diversity does not make the population more vulnerable in this model, likely because sexual selection concentrates reproduction among better-adapted individuals.
 
-#### Reproductive success distribution
+### Reproductive success distribution
 ![Reproductive success distribution](figures/offspring_per_male.png)
 
 Figure 5 shows the distribution of offspring counts per male (aggregated across all generations), plotted on a logarithmic scale to highlight the long tail of the distribution.
@@ -259,7 +259,7 @@ Despite the lack of statistical significance, this pattern is biologically meani
 
 Tail-dependent mate choice can increase mean fitness by favoring high-quality individuals, but it also concentrates reproduction in a few males, reducing effective population size. Under fast environmental change, the viability cost of long tails is amplified for poorly adapted individuals. As a result, populations can show higher average fitness while simultaneously being more prone to extinction, reflecting a trade-off between adaptation efficiency and demographic stability.
 
-#### Tail honesty
+### Tail honesty
 
 ![Tail honesty correlation](figures/correlation_timeseries.png)
 
