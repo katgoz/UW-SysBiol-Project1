@@ -31,11 +31,10 @@ class Population:
         for _ in range(size):
             phenotype = np.random.normal(loc=center, scale=init_scale, size=n_dim)
 
-            # losujemy "płeć" przez tail
             if np.random.rand() < 0.5:
-                tail = 0.0          # F
+                tail = 0.0
             else:
-                tail = np.random.rand()  # M (ma ogon)
+                tail = np.random.rand()
 
             self.individuals.append(Individual(phenotype, tail))
 
