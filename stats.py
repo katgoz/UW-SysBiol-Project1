@@ -1,5 +1,3 @@
-# stats.py
-
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -28,15 +26,15 @@ class SimulationStats:
         self.extinct_at: Optional[int] = None
         self.alpha_history: List[np.ndarray] = []
         self.male_offspring_distributions: List[List[int]] = []
-        self.individual_fitness_series: List[np.ndarray] = []
 
-        # przechowuje ostatnią korelację po selekcji
+        # korelacja po selekcji
         self._last_corr_survivors: float = np.nan
 
-        self.individual_distance_series: List[np.ndarray] = []
+        # do violin plotów
         self.individual_base_fitness_series: List[np.ndarray] = []
+
     # =========================================================
-    #  korelacja po selekcji
+    # korelacja po selekcji (honesty signal)
     # =========================================================
     def record_survivors(self, survivors, alpha, sigma):
         males = [ind for ind in survivors if ind.get_sex() == "M"]
@@ -73,22 +71,22 @@ class SimulationStats:
         self.alpha_history.append(alpha.copy())
 
         phenotypes = np.array([ind.get_phenotype() for ind in individuals])
-        distances_individual = np.linalg.norm(phenotypes - alpha, axis=1)
-        self.individual_distance_series.append(distances_individual)
+
         male_inds = [ind for ind in individuals if ind.get_sex() == "M"]
 
-        male_tails = np.array([ind.get_tail() for ind in male_inds], dtype=float) if male_inds else np.array([])
-        male_mean_tail = float(male_tails.mean()) if len(male_tails) > 0 else 0.0
+        male_mean_tail = (
+            float(np.mean([ind.get_tail() for ind in male_inds]))
+            if male_inds else 0.0
+        )
 
         fitnesses = compute_fitnesses(individuals, alpha, sigma)
 
-        #  base fitness (BEZ kosztu ogona)
+        # base fitness (bez kosztu ogona)
         diffs = phenotypes - alpha
-        base_fitness_individual = np.exp(-np.sum(diffs * diffs, axis=1) / (2 * sigma**2))
+        base_fitness_individual = np.exp(
+            -np.sum(diffs * diffs, axis=1) / (2 * sigma**2)
+        )
         self.individual_base_fitness_series.append(base_fitness_individual)
-        
-
-        self.individual_fitness_series.append(fitnesses.copy())
 
         mean_phenotype = phenotypes.mean(axis=0)
         phenotype_variance = phenotypes.var(axis=0).mean()
@@ -107,22 +105,6 @@ class SimulationStats:
             self.male_offspring_distributions.append([])
 
         # =========================================================
-        # korelacja w całej populacji
-        # =========================================================
-        if len(male_inds) > 1:
-            male_pheno = np.array([ind.get_phenotype() for ind in male_inds])
-
-            diffs_m = male_pheno - alpha
-            base_fit_m = np.exp(-np.sum(diffs_m * diffs_m, axis=1) / (2 * sigma**2))
-
-            if np.std(male_tails) > 1e-8:
-                corr_population = np.corrcoef(male_tails, base_fit_m)[0, 1]
-            else:
-                corr_population = 0.0
-        else:
-            corr_population = np.nan
-
-        # =========================================================
         # zapis rekordu
         # =========================================================
         self.records.append(GenerationRecord(
@@ -137,7 +119,6 @@ class SimulationStats:
             median_offspring=repro.get('median_offspring', 0.0),
             max_offspring=repro.get('max_offspring', 0),
             extra={
-                'tail_base_corr': corr_population,
                 'corr_survivors': self._last_corr_survivors
             }
         ))
@@ -156,20 +137,15 @@ class SimulationStats:
         return self.individual_base_fitness_series
 
     @property
-    def individual_distances(self):
-        return self.individual_distance_series
-
-    @property
     def male_offspring_series(self):
         return self.male_offspring_distributions
 
     @property
-    def tail_base_corr_series(self):
-        return np.array([r.extra.get('tail_base_corr', np.nan) for r in self.records])
-
-    @property
     def corr_survivors_series(self):
-        return np.array([r.extra.get('corr_survivors', np.nan) for r in self.records])
+        return np.array([
+            r.extra.get('corr_survivors', np.nan)
+            for r in self.records
+        ])
 
     @property
     def generations(self) -> np.ndarray:
