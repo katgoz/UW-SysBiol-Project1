@@ -62,6 +62,7 @@ for i, condition in enumerate(conditions):
         ax.fill_between(range(len(mean)), mean-std, mean+std, alpha=0.2)
 
     ax.set_title(condition.replace('_', ' '))
+    ax.set_ylim(0, 0.7)
     ax.set_xlabel("Generation")
     ax.set_ylabel("Fitness")
     ax.legend()
@@ -403,22 +404,43 @@ print(f"tail_effect:     VAR  = {np.var(tail_vals):.6f}")
 print(f"no_tail_effect:  mean = {no_tail_vals.mean():.4f} ± {no_tail_vals.std():.4f}")
 print(f"no_tail_effect:  VAR  = {np.var(no_tail_vals):.6f}")
 
-print("\n=== CHECK: tail variance per generation ===")
+# =========================================================
+# 13. FITNESS DISTRIBUTION (VIOLIN) 🔥
+# =========================================================
 
-for condition in conditions:
-    for drift in drifts:
-        runs = results[condition][drift]
+import matplotlib.pyplot as plt
 
-        vals = []
+generations_to_check = [50, 150]
 
-        for r in runs:
-            if hasattr(r, "male_tails_series"):
-                for gen in r.male_tails_series[-50:]:
-                    if len(gen) > 0:
-                        vals.append(np.var(gen))
+for gen in generations_to_check:
+    plt.figure(figsize=(10,6))
 
-        if len(vals) > 0:
-            vals = np.array(vals)
-            print(f"{condition}-{drift}: var = {vals.mean():.6f}")
-        else:
-            print(f"{condition}-{drift}: brak danych")
+    data_to_plot = []
+    labels = []
+
+    for condition in conditions:
+        for drift in drifts:
+            runs = results[condition][drift]
+
+            all_fitness = []
+
+            for r in runs:
+                if hasattr(r, "individual_fitness_series"):
+                    if len(r.individual_fitness_series) > gen:
+                        gen_data = r.individual_fitness_series[gen]
+                        if len(gen_data) > 0:
+                            all_fitness.extend(gen_data)
+
+            if len(all_fitness) > 0:
+                data_to_plot.append(all_fitness)
+                labels.append(f"{condition.replace('_',' ')}\n{drift}")
+
+    if len(data_to_plot) > 0:
+        plt.violinplot(data_to_plot, showmeans=True)
+        plt.xticks(range(1, len(labels)+1), labels)
+
+        plt.ylabel("Individual fitness")
+        plt.title(f"Fitness distribution at generation {gen}")
+
+        plt.savefig(f"figures/violin_fitness_gen_{gen}.png", dpi=300)
+        plt.show()
