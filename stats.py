@@ -29,11 +29,16 @@ class SimulationStats:
         self.alpha_history: List[np.ndarray] = []
         self.male_offspring_distributions: List[List[int]] = []
 
+        # 🔥 NEW: pełne rozkłady fitness
+        self.individual_fitness_series: List[np.ndarray] = []
+
         # przechowuje ostatnią korelację po selekcji
         self._last_corr_survivors: float = np.nan
 
+        self.individual_distance_series: List[np.ndarray] = []
+        self.individual_base_fitness_series: List[np.ndarray] = []
     # =========================================================
-    #   korelacja po selekcji
+    # 🔥 korelacja po selekcji
     # =========================================================
     def record_survivors(self, survivors, alpha, sigma):
         males = [ind for ind in survivors if ind.get_sex() == "M"]
@@ -56,7 +61,7 @@ class SimulationStats:
         self._last_corr_survivors = corr
 
     # =========================================================
-    # Główne zbieranie statystyk
+    # główne zbieranie statystyk
     # =========================================================
     def record(self, generation: int, population, alpha: np.ndarray,
                sigma: float, reproduction_strategy=None) -> None:
@@ -70,12 +75,23 @@ class SimulationStats:
         self.alpha_history.append(alpha.copy())
 
         phenotypes = np.array([ind.get_phenotype() for ind in individuals])
+        # 🔥 distance dla każdego osobnika
+        distances_individual = np.linalg.norm(phenotypes - alpha, axis=1)
+        self.individual_distance_series.append(distances_individual)
         male_inds = [ind for ind in individuals if ind.get_sex() == "M"]
 
         male_tails = np.array([ind.get_tail() for ind in male_inds], dtype=float) if male_inds else np.array([])
         male_mean_tail = float(male_tails.mean()) if len(male_tails) > 0 else 0.0
 
         fitnesses = compute_fitnesses(individuals, alpha, sigma)
+
+        # 🔥 base fitness (BEZ kosztu ogona)
+        diffs = phenotypes - alpha
+        base_fitness_individual = np.exp(-np.sum(diffs * diffs, axis=1) / (2 * sigma**2))
+        self.individual_base_fitness_series.append(base_fitness_individual)
+        
+         # 🔥 NEW: zapis pełnego rozkładu fitness
+        self.individual_fitness_series.append(fitnesses.copy())
 
         mean_phenotype = phenotypes.mean(axis=0)
         phenotype_variance = phenotypes.var(axis=0).mean()
@@ -94,7 +110,7 @@ class SimulationStats:
             self.male_offspring_distributions.append([])
 
         # =========================================================
-        # korelacja w CAŁEJ populacji (słabsza, pomocnicza)
+        # korelacja w całej populacji
         # =========================================================
         if len(male_inds) > 1:
             male_pheno = np.array([ind.get_phenotype() for ind in male_inds])
@@ -138,6 +154,14 @@ class SimulationStats:
     # =========================================================
     # properties
     # =========================================================
+    @property
+    def individual_base_fitness(self):
+        return self.individual_base_fitness_series
+
+    @property
+    def individual_distances(self):
+        return self.individual_distance_series
+
     @property
     def male_offspring_series(self):
         return self.male_offspring_distributions
