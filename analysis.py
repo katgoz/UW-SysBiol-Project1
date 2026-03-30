@@ -405,10 +405,8 @@ print(f"no_tail_effect:  mean = {no_tail_vals.mean():.4f} ± {no_tail_vals.std()
 print(f"no_tail_effect:  VAR  = {np.var(no_tail_vals):.6f}")
 
 # =========================================================
-# 13. FITNESS DISTRIBUTION (VIOLIN) 🔥
+# 13. BASE FITNESS DISTRIBUTION (VIOLIN) 
 # =========================================================
-
-import matplotlib.pyplot as plt
 
 generations_to_check = [50, 150]
 
@@ -422,25 +420,25 @@ for gen in generations_to_check:
         for drift in drifts:
             runs = results[condition][drift]
 
-            all_fitness = []
+            all_base_fit = []
 
             for r in runs:
-                if hasattr(r, "individual_fitness_series"):
-                    if len(r.individual_fitness_series) > gen:
-                        gen_data = r.individual_fitness_series[gen]
+                if hasattr(r, "individual_base_fitness_series"):
+                    if len(r.individual_base_fitness_series) > gen:
+                        gen_data = r.individual_base_fitness_series[gen]
                         if len(gen_data) > 0:
-                            all_fitness.extend(gen_data)
+                            all_base_fit.extend(gen_data)
 
-            if len(all_fitness) > 0:
-                data_to_plot.append(all_fitness)
+            if len(all_base_fit) > 0:
+                data_to_plot.append(all_base_fit)
                 labels.append(f"{condition.replace('_',' ')}\n{drift}")
 
     if len(data_to_plot) > 0:
         plt.violinplot(data_to_plot, showmeans=True)
         plt.xticks(range(1, len(labels)+1), labels)
 
-        plt.ylabel("Individual fitness")
-        plt.title(f"Fitness distribution at generation {gen}")
+        plt.ylabel("Base fitness (no tail cost)")
+        plt.title(f"Base fitness distribution at generation {gen}")
 
-        plt.savefig(f"figures/violin_fitness_gen_{gen}.png", dpi=300)
+        plt.savefig(f"figures/violin_base_fitness_gen_{gen}.png", dpi=300)
         plt.show()
