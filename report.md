@@ -105,7 +105,7 @@ Key parameters:
 
 - population size: $N = 100$
 - phenotype dimension: $n = 4$
-- initial variation: $\text{init\_scale} = 0.1$
+- initial variation: `init_scale = 0.1`
 
 Mutation:
 
