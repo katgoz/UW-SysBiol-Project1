@@ -236,11 +236,13 @@ The lower variance in the tail-dependent condition does not lead to lower fitnes
 Figure 5 shows the distribution of offspring counts per male (aggregated across all generations), plotted on a logarithmic scale to highlight the long tail of the distribution.
 
 **Description**
+
 In both conditions, most males have relatively few offspring. However, the distributions differ substantially in their upper tails.
 
 The tail-dependent condition exhibits a much heavier tail, with a noticeably larger number of males achieving high reproductive success (e.g. 20+ offspring, and even up to ~50). In contrast, the no-tail condition declines much more rapidly, with very few males reaching such high offspring numbers.
 
 **Interpretation**
+
 This demonstrates that sexual selection strongly increases reproductive inequality by allowing a subset of males to reproduce disproportionately often.
 
 Although each mating pair produces a fixed number of offspring, inequality emerges from variation in mating success (i.e. the number of partners per male), not from offspring number per mating.
@@ -255,6 +257,7 @@ Extinction rates were low across all conditions. No extinctions were observed in
 Fisher’s exact test indicated that the difference between conditions was not statistically significant (p = 0.487 for fast drift).
 
 **Interpretation**
+
 Despite the lack of statistical significance, this pattern is biologically meaningful. While tail-dependent mate choice increases mean fitness (as shown in previous figures), it also introduces additional risks.
 
 Tail-dependent mate choice can increase mean fitness by favoring high-quality individuals, but it also concentrates reproduction in a few males, reducing effective population size. Under fast environmental change, the viability cost of long tails is amplified for poorly adapted individuals. As a result, populations can show higher average fitness while simultaneously being more prone to extinction, reflecting a trade-off between adaptation efficiency and demographic stability.
