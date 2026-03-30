@@ -1,6 +1,5 @@
 ### Introduction
 
-### Introduction
 
 Many species exhibit traits that reduce survival but increase reproductive success, such as elaborate tails in male birds. The handicap principle suggests that only high-quality individuals can afford costly ornaments, making them honest signals of quality.
 
@@ -155,6 +154,7 @@ As an additional analysis, we performed a parameter sensitivity experiment by va
 ## Results
 
 ### Mean fitness trajectories
+![Mean fitness](figures/fitness.png)
 Figure 1 shows the mean fitness (± standard deviation across 20 replicates) over time for both experimental conditions and environmental drift regimes. 
 
 **Note:** Fitness is computed differently in the two conditions shown in this figure. In populations without the tail trait, fitness is equal to $\phi_{base}$, whereas in populations with the tail trait it additionally includes the tail-dependent cost, as defined above.
@@ -175,7 +175,7 @@ Importantly, the advantage of mate choice is present under both slow and fast en
 
 
 ### Lag from the environmental optimum
-
+![Distance from optimum](figures/distance.png)
 Figure 2 shows the mean distance from the environmental optimum (± standard deviation across replicates) over time.
 
 **Note** The environmental optimum is defined only over the ecological traits. The tail trait does not contribute to the optimum, but instead modifies fitness via a viability cost, thereby affecting survival without being a target of environmental adaptation.
@@ -196,7 +196,8 @@ Taken together with the fitness results, these findings imply that the primary e
 
 
 ### Distribution of base fitness (no tail cost)
-
+![Base fitness distribution](figures/violin_base_fitness_gen_50.png)
+![Base fitness distribution](figures/violin_base_fitness_gen_150.png)
 Figure 3 shows the distribution of individual base fitness (i.e., fitness calculated without the tail-dependent cost) at selected generations.
 
 **Description**
@@ -212,7 +213,7 @@ This pattern indicates that sexual selection slightly shifts the distribution of
 These distributional differences help explain why populations with mate choice achieve higher mean fitness (Figure 1), despite the cost associated with the tail trait.
 
 #### Phenotypic variance
-
+![Phenotypic variance](figures/variance.png)
 Figure 4 shows the mean phenotypic variance (± standard deviation) over time, for slow and fast environmental drift.
 
 **Description**
@@ -228,6 +229,8 @@ This indicates that sexual selection reduces phenotypic diversity, likely by inc
 The lower variance in the tail-dependent condition does not lead to lower fitness in later generations. In fact, fitness remains higher than in the no-tail condition. This suggests that reduced diversity does not make the population more vulnerable in this model, likely because sexual selection concentrates reproduction among better-adapted individuals.
 
 #### Reproductive success distribution
+![Reproductive success distribution](figures/offspring_per_male.png)
+
 Figure 5 shows the distribution of offspring counts per male (aggregated across all generations), plotted on a logarithmic scale to highlight the long tail of the distribution.
 
 **Description**
@@ -242,7 +245,7 @@ Although each mating pair produces a fixed number of offspring, inequality emerg
 
 
 ### Extinction rate
-
+![Extinction rate](figures/extinction.png)
 **Description**
 
 Extinction rates were low across all conditions. No extinctions were observed in three of the four scenarios. Only the tail-effect condition under fast environmental drift showed extinction events (2 out of 20 replicates, 10%).
@@ -256,6 +259,9 @@ Tail-dependent mate choice can increase mean fitness by favoring high-quality in
 
 #### Tail honesty
 
+![Tail honesty correlation](figures/correlation_timeseries.png)
+
+Figure 7. Correlation between tail length and individual quality over time.
 Figure 7 shows the correlation between male tail length and underlying quality (fitness), measured after selection (i.e. among surviving individuals).
 
 **Description**
@@ -296,6 +302,8 @@ Overall, tail-dependent mate choice produces a **real but relatively weak honest
 ### Parameter sensitivity analysis (additional experiment)
 
 As an additional experiment, we explored how the effect of tail-dependent mate choice depends on the speed of environmental change (*c*). We varied *c* across a range of values while keeping other parameters fixed, and measured two key outcomes: final mean fitness and extinction rate.
+![Parameter sensitivity analysis](figures/fitness_vs_c.png)
+![Parameter sensitivity analysis](figures/extinction_vs_c.png)
 
 **Description**
 - **Fitness vs drift speed**
