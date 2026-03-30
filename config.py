@@ -35,17 +35,17 @@ init_scale = 0.1   # = sigma / sqrt(n) = 0.2 / 2 = 0.1
 # --------------------
 # PARAMETRY MUTACJI
 # --------------------
-mu = 0.1          # prawdopodobieństwo mutacji dla osobnika
-mu_c = 0.5        # prawdopodobieństwo mutacji konkretnej cechy, jeśli osobnik mutuje
-xi = 0.05         # odchylenie standardowe mutacji
+mu = 0.2          # prawdopodobieństwo mutacji dla osobnika
+mu_c = 0.7        # prawdopodobieństwo mutacji konkretnej cechy, jeśli osobnik mutuje
+xi = 0.15         # odchylenie standardowe mutacji
                   # (mniejsze niż w 2D: w wyższych wymiarach duże kroki
                   #  są proporcjonalnie bardziej szkodliwe – tw. Fishera)
 
 # --------------------
 # PARAMETRY SELEKCJI
 # --------------------
-sigma = 0.2       # parametr w funkcji fitness (kontroluje siłę selekcji)
-threshold = 0.01  # próg selekcji progowej
+sigma = 0.15       # parametr w funkcji fitness (kontroluje siłę selekcji)
+threshold = 0.05  # próg selekcji progowej
                   # (obniżony z 0.1 do 0.01: w 4D maksymalna tolerowana
                   #  odległość od optimum rośnie z 0.43 do 0.61)
 
