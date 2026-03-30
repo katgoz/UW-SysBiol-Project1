@@ -101,11 +101,6 @@ class SexualReproduction(ReproductionStrategy):
                 mother_pheno = mother.get_phenotype()
                 father_pheno = father.get_phenotype()
 
-                """
-                w = np.random.normal(0.5, 0.25, size=len(mother_pheno))
-                w = np.clip(w, 0.0, 1.0)
-                child_phenotype = w * mother_pheno + (1 - w) * father_pheno
-                """
                 mask = np.random.rand(len(mother_pheno)) < 0.5
                 child_phenotype = np.where(mask, mother_pheno, father_pheno)
 
